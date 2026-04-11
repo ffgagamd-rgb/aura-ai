@@ -1,22 +1,49 @@
+<style>
+    /* Admitad Banner Style */
+    .ad-banner {
+        width: 100%;
+        max-width: 400px;
+        background: #1c2128;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 10px;
+        margin-top: 20px;
+        text-align: center;
+        color: #8b949e;
+        font-size: 12px;
+    }
+</style>
+
 <script>
     const UNITY_ID = '5076529';
-    let isAdReady = false;
-
-    // Fast Loading Initialization
-    UnityAds.init(UNITY_ID, true, {
-        onComplete: () => { isAdReady = true; console.log("Ads Ready!"); },
-        onFailed: (error, message) => { isAdReady = false; console.log("Ads Failed: " + message); }
-    });
+    
+    // Ads load ho ya na ho, system nahi rukega
+    try {
+        UnityAds.init(UNITY_ID, true);
+    } catch(e) {
+        console.log("Ads blocked or slow network.");
+    }
 
     function shareCard() {
-        // Agar Ad ready hai toh dikhao, nahi toh card save karne do
-        if(isAdReady) {
+        // Step 1: Card Generate ho jayega turant
+        alert("Card Successfully Created! ✅");
+        
+        // Step 2: Ad try karega, nahi toh bypass karega
+        if (typeof UnityAds !== 'undefined' && UnityAds.isReady('Interstitial_Android')) {
             UnityAds.show('Interstitial_Android');
-            alert("Card Saved! Link Copying...");
         } else {
-            // Backup: Agar SDK loading bol raha hai toh bypass karo
-            alert("Card Created Successfully! ✅ (Ad loading in background)");
-            // Yahan hum Admitad ka link redirect kar sakte hain
+            // Agar Unity nahi chali toh Admitad ya koi offer dikha sakte ho
+            console.log("Unity Ad not ready, showing backup offer.");
         }
+        
+        // Card link copy karne ka logic yahan aayega
+        const dummyLink = "auraai.in/user/" + document.getElementById('nameInp').value;
+        navigator.clipboard.writeText(dummyLink);
+        alert("Your Bio-Link Copied: " + dummyLink);
     }
 </script>
+
+<div class="ad-banner">
+    <p>🔥 Special Offer: Get 50% Off on Hosting</p>
+    <a href="YOUR_ADMITAD_LINK" style="color:#58a6ff; text-decoration:none;">Click Here to Claim</a>
+</div>
