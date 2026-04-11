@@ -1,93 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraAI.in | Pro Digital Hub</title>
-    <script src="https://cdn.unityads.unity3d.com/sdk/4.0/unityads.js"></script>
-    <style>
-        :root { --accent: #58a6ff; --bg: #010409; --card: rgba(22, 27, 34, 0.8); }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: white; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-
-        .header { margin-bottom: 30px; text-align: center; }
-        .header h1 { font-size: 30px; background: linear-gradient(90deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Editor Section */
-        .editor-box { background: var(--card); border: 1px solid #30363d; padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
-        h2 { font-size: 14px; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
-        input:focus { border-color: var(--accent); }
-
-        /* Live Preview Card (Instagram Style) */
-        .preview-card { width: 100%; max-width: 320px; background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 30px; padding: 30px 20px; margin-top: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: none; }
-        .p-img { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; }
-        .p-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .p-bio { font-size: 12px; color: #8b949e; margin-bottom: 20px; }
-        .p-link { display: block; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; color: var(--accent); text-decoration: none; font-size: 14px; margin-bottom: 8px; border: 1px solid rgba(88, 166, 255, 0.2); }
-
-        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; background: var(--accent); color: white; margin-top: 10px; }
-        .btn-share { background: #238636; margin-top: 20px; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <h1>AuraAI.in</h1>
-    <p style="color: #8b949e; font-size: 12px;">Premium Digital Bio-Link Studio</p>
-</div>
-
-<div class="editor-box">
-    <h2>Edit Your Bio-Card</h2>
-    <input type="text" id="nameInp" placeholder="Your Name" oninput="updatePreview()">
-    <input type="text" id="bioInp" placeholder="Your Profession (e.g. Youtuber)" oninput="updatePreview()">
-    <input type="text" id="linkInp" placeholder="YouTube or Instagram Link" oninput="updatePreview()">
-    
-    <button class="btn-main" onclick="showPreview()">✨ GENERATE PREVIEW</button>
-</div>
-
-<div class="preview-card" id="card">
-    <div class="p-img">👤</div>
-    <div class="p-name" id="pName">Name Here</div>
-    <div class="p-bio" id="pBio">Profession Here</div>
-    <div id="linkBox"></div>
-    
-    <button class="btn-main btn-share" onclick="shareCard()">🚀 GET LINK & SHARE (AD)</button>
-</div>
-
-<p style="margin-top: 40px; font-size: 10px; color: #30363d;">SECURE STUDIO SYSTEM</p>
-
 <script>
-    // Unity Ads Init
     const UNITY_ID = '5076529';
-    UnityAds.init(UNITY_ID, true);
+    let isAdReady = false;
 
-    function updatePreview() {
-        document.getElementById('pName').innerText = document.getElementById('nameInp').value || "Your Name";
-        document.getElementById('pBio').innerText = document.getElementById('bioInp').value || "Your Profession";
-        
-        const link = document.getElementById('linkInp').value;
-        const linkBox = document.getElementById('linkBox');
-        if(link) {
-            linkBox.innerHTML = `<div class="p-link">🔗 ${link}</div>`;
-        }
-    }
-
-    function showPreview() {
-        document.getElementById('card').style.display = 'block';
-        window.scrollTo(0, document.body.scrollHeight);
-    }
+    // Fast Loading Initialization
+    UnityAds.init(UNITY_ID, true, {
+        onComplete: () => { isAdReady = true; console.log("Ads Ready!"); },
+        onFailed: (error, message) => { isAdReady = false; console.log("Ads Failed: " + message); }
+    });
 
     function shareCard() {
-        // Asli Kamaai Yahan Hogi
-        if(typeof UnityAds !== 'undefined') {
+        // Agar Ad ready hai toh dikhao, nahi toh card save karne do
+        if(isAdReady) {
             UnityAds.show('Interstitial_Android');
-            alert("Card Created! Link is being generated... (Check Ads Status)");
+            alert("Card Saved! Link Copying...");
         } else {
-            alert("Unity SDK loading...");
+            // Backup: Agar SDK loading bol raha hai toh bypass karo
+            alert("Card Created Successfully! ✅ (Ad loading in background)");
+            // Yahan hum Admitad ka link redirect kar sakte hain
         }
     }
 </script>
-</body>
-</html>
