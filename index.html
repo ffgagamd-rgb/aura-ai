@@ -3,83 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraAI.in | HD Image Processing</title>
+    <title>AuraAI.in | Professional AI Studio</title>
     <script src="https://cdn.unityads.unity3d.com/sdk/4.0/unityads.js"></script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { background: #020617; color: #f8fafc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #05070a; color: white; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         
-        .studio-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 40px; padding: 40px 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        /* Full Screen Premium Studio Look */
+        .studio-container { width: 100vw; height: 100vh; background: radial-gradient(circle at top, #1e293b 0%, #020617 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
         
-        h1 { font-size: 32px; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-        .tagline { font-size: 13px; color: #64748b; margin-bottom: 30px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; width: 100%; max-width: 450px; padding: 40px 25px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); z-index: 10; }
 
-        /* Round Selection Circle */
-        .circle-container { width: 160px; height: 160px; border: 2px dashed #38bdf8; border-radius: 50%; margin: 0 auto 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: rgba(56, 189, 248, 0.02); overflow: hidden; }
-        .preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        h1 { font-size: 36px; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; font-weight: 800; }
+        .status-text { color: #94a3b8; font-size: 14px; margin-bottom: 30px; }
+
+        /* Real-time Image Preview Area */
+        .preview-zone { width: 100%; height: 220px; border-radius: 25px; border: 2px dashed #38bdf8; margin-bottom: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; background: rgba(56, 189, 248, 0.05); }
+        #imgPreview { width: 100%; height: 100%; object-fit: contain; display: none; }
         
-        .btn-main { background: linear-gradient(to right, #2563eb, #7c3aed); color: white; border: none; padding: 18px; border-radius: 30px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
+        /* Progress Bar Section */
+        .progress-container { width: 100%; display: none; margin-bottom: 20px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: linear-gradient(to right, #38bdf8, #7c3aed); transition: width 0.3s; }
+        #percentText { font-size: 12px; color: #38bdf8; margin-top: 8px; font-weight: bold; }
 
-        #loading { display: none; color: #38bdf8; font-size: 14px; margin: 20px 0; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .btn-action { width: 100%; padding: 18px; border-radius: 20px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; background: linear-gradient(45deg, #2563eb, #7c3aed); color: white; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+        .btn-action:active { transform: scale(0.96); }
 
-        #result-box { display: none; margin-top: 30px; border-top: 1px solid #1e293b; padding-top: 25px; }
-        #final-img { width: 100%; border-radius: 20px; border: 1px solid #334155; background: #000; margin-bottom: 15px; }
-        .dl-btn { background: #1e293b; color: #38bdf8; text-decoration: none; padding: 12px; border-radius: 12px; display: block; border: 1px solid #38bdf8; font-size: 14px; font-weight: bold; }
+        /* Ad & Footer */
+        .ad-wala { margin-top: 30px; font-size: 10px; color: #475569; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<div class="studio-card">
-    <h1>AuraAI.in</h1>
-    <p class="tagline">The Global Leader in AI Image Processing</p>
+<div class="studio-container">
+    <div class="glass-panel">
+        <h1>AuraAI.in</h1>
+        <p class="status-text">Premium AI Background Removal Studio</p>
 
-    <input type="file" id="photoInput" hidden accept="image/*">
-    <div class="circle-container" onclick="document.getElementById('photoInput').click()">
-        <div id="upload-icon">
-            <span style="font-size: 40px;">💎</span>
-            <p style="font-size: 11px; color: #38bdf8; margin-top: 5px;">UPLOAD IMAGE</p>
+        <input type="file" id="imageInput" hidden accept="image/*">
+        <div class="preview-zone" onclick="document.getElementById('imageInput').click()" id="dropArea">
+            <div id="uploadPlaceholder">
+                <span style="font-size: 40px;">📸</span>
+                <p style="font-size: 12px; color: #38bdf8; margin-top: 10px;">TAP TO CHOOSE PHOTO</p>
+            </div>
+            <img id="imgPreview" src="">
         </div>
-        <img id="userPreview" class="preview-img">
-    </div>
 
-    <div id="loading">✨ AI is cleaning your photo...</div>
-    <button class="btn-main" onclick="processPhoto()">✨ START HD PROCESSING</button>
+        <div class="progress-container" id="progBox">
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progFill"></div>
+            </div>
+            <p id="percentText">Processing: 0%</p>
+        </div>
 
-    <div id="result-box">
-        <p style="color: #10b981; margin-bottom: 10px; font-size: 14px;">✅ Done! Ultra HD Ready</p>
-        <img id="final-img" src="">
-        <a id="downloadLink" class="dl-btn" download="AuraAI_Cleaned.png">📥 DOWNLOAD RESULT</a>
+        <button class="btn-action" onclick="startAIProcess()">✨ REMOVE BACKGROUND</button>
+        
+        <p class="ad-wala">SECURE AI INFRASTRUCTURE BY VDOWIN</p>
     </div>
 </div>
 
 <script>
-    // Unity Ads
-    const UNITY_ID = '5076529'; 
-    const BG_API = 'mtRYRnmx3dNQ1WhvnYuRgnQz'; //
+    const CONFIG = {
+        UNITY_ID: '5076529', //
+        BG_API: 'mtRYRnmx3dNQ1WhvnYuRgnQz' //
+    };
 
-    UnityAds.init(UNITY_ID, true);
+    UnityAds.init(CONFIG.UNITY_ID, true);
 
-    document.getElementById('photoInput').onchange = function(e) {
+    document.getElementById('imageInput').onchange = function(e) {
         const file = e.target.files[0];
         if(file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                document.getElementById('userPreview').src = event.target.result;
-                document.getElementById('userPreview').style.display = 'block';
-                document.getElementById('upload-icon').style.display = 'none';
+                document.getElementById('imgPreview').src = event.target.result;
+                document.getElementById('imgPreview').style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
             }
             reader.readAsDataURL(file);
         }
     };
 
-    async function processPhoto() {
-        const file = document.getElementById('photoInput').files[0];
-        if(!file) return alert("Bhai, pehle photo toh select karo!");
+    async function startAIProcess() {
+        const file = document.getElementById('imageInput').files[0];
+        if(!file) return alert("Bhai pehle photo toh chuno!");
 
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('result-box').style.display = 'none';
+        const progBox = document.getElementById('progBox');
+        const progFill = document.getElementById('progFill');
+        const percentText = document.getElementById('percentText');
+
+        progBox.style.display = 'block';
+        
+        // Animated Progress Bar (%)
+        let progress = 0;
+        const interval = setInterval(() => {
+            if(progress < 90) {
+                progress += Math.random() * 10;
+                progFill.style.width = progress + "%";
+                percentText.innerText = "AI Processing: " + Math.floor(progress) + "%";
+            }
+        }, 400);
 
         const fd = new FormData();
         fd.append('image_file', file);
@@ -87,32 +110,38 @@
         try {
             const res = await fetch('https://api.remove.bg/v1.0/removebg', {
                 method: 'POST',
-                headers: { 'X-Api-Key': BG_API },
+                headers: { 'X-Api-Key': CONFIG.BG_API },
                 body: fd
             });
 
             if(res.ok) {
+                clearInterval(interval);
+                progFill.style.width = "100%";
+                percentText.innerText = "Processing Complete: 100%";
+                
                 const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
+                const resultUrl = URL.createObjectURL(blob);
                 
-                document.getElementById('final-img').src = url;
-                document.getElementById('downloadLink').href = url;
+                document.getElementById('imgPreview').src = resultUrl;
                 
-                // Show Tera Ad (Unity)
+                // Show Tera Ad (Kamaai)
                 UnityAds.show('Interstitial_Android');
-
-                document.getElementById('result-box').style.display = 'block';
+                
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = resultUrl;
+                    link.download = 'AuraAI_HD.png';
+                    link.click();
+                }, 1000);
             } else {
-                // Agar server error aaye toh alert
-                alert("Server busy! API Key ki limit check karein.");
+                alert("API Limit ya server error! Check credentials.");
             }
         } catch (e) {
-            alert("Network Error! Phir se koshish karein.");
+            alert("Network Error! Internet check karke phir se try karein.");
         } finally {
-            document.getElementById('loading').style.display = 'none';
+            clearInterval(interval);
         }
     }
 </script>
-
 </body>
 </html>
