@@ -1,135 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraAI.in | Digital Pro Studio</title>
-    <script src="https://cdn.unityads.unity3d.com/sdk/4.0/unityads.js"></script>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
-        body { background: #010409; color: #e6edf3; min-height: 100vh; overflow-x: hidden; padding-bottom: 50px; }
-        
-        .header { padding: 30px; text-align: center; background: linear-gradient(180deg, #0d1117 0%, #010409 100%); }
-        h1 { font-size: 38px; background: linear-gradient(90deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-        
-        .container { max-width: 450px; margin: 0 auto; padding: 20px; }
-        
-        /* Tool Card Style */
-        .tool-card { background: #161b22; border: 1px solid #30363d; border-radius: 25px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { font-size: 18px; color: #58a6ff; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-
-        input, select, textarea { width: 100%; padding: 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
-        
-        .btn-premium { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(45deg, #238636, #2ea043); color: white; transition: 0.3s; }
-        .btn-premium:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        /* Preview Circle for Image Tool */
-        .circle-upload { width: 120px; height: 120px; border: 2px dashed #58a6ff; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
-        #imgPrev { width: 100%; height: 100%; object-fit: cover; display: none; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <h1>AuraAI.in</h1>
-    <p style="color: #8b949e; font-size: 13px; margin-top: 5px;">Premium Tools for Smart Users</p>
-</div>
-
 <div class="container">
     <div class="tool-card">
-        <h2>✨ HD Background Remover</h2>
-        <div class="circle-upload" onclick="document.getElementById('fInp').click()">
-            <span id="upText" style="font-size: 30px;">📸</span>
-            <img id="imgPrev">
+        <h2>🔥 Daily Status & Shayari</h2>
+        <div id="statusDisplay" style="background:#0d1117; padding:15px; border-radius:10px; min-height:60px; margin-bottom:15px; border:1px solid #30363d; font-style:italic; color:#bc8cff;">
+            "Click below to get trending AI Captions..."
         </div>
-        <input type="file" id="fInp" hidden accept="image/*">
-        <button class="btn-premium" onclick="cleanPhoto()">START PROCESSING</button>
-        <p id="progStatus" style="font-size: 11px; color: #58a6ff; margin-top: 10px; display: none;"></p>
-    </div>
-
-    <div class="tool-card">
-        <h2>💬 WhatsApp Direct Chat</h2>
-        <input type="number" id="waNum" placeholder="Enter Number (with 91)">
-        <button class="btn-premium" style="background: #25d366;" onclick="waChat()">OPEN WHATSAPP</button>
-    </div>
-
-    <div class="tool-card">
-        <h2>🔥 Insta Caption Helper</h2>
-        <select id="mood">
-            <option value="Cool Vibes Only 😎 #AuraAI">Cool Vibes</option>
-            <option value="Dream big, work hard. ✨ #Success">Motivational</option>
-            <option value="Life is better when you're laughing. 😂">Funny</option>
+        <select id="moodSelect">
+            <option value="attitude">Attitude Status 😎</option>
+            <option value="love">Love Shayari ❤️</option>
+            <option value="motivation">Success Quotes 🚀</option>
         </select>
-        <button class="btn-premium" style="background: #e1306c;" onclick="copyCap()">COPY CAPTION</button>
+        <button class="btn-premium" onclick="generateStatus()">GENERATE NEW STATUS</button>
+        <button class="btn-premium" style="background:#30363d; margin-top:10px;" onclick="copyStatus()">COPY TO CLIPBOARD</button>
     </div>
 
-    <p style="text-align: center; font-size: 10px; color: #484f58; letter-spacing: 2px;">POWERED BY VDOWIN NETWORK</p>
+    <div class="tool-card">
+        <h2>💬 Direct WhatsApp Chat</h2>
+        <input type="number" id="waNum" placeholder="Phone Number (e.g. 919876...)">
+        <button class="btn-premium" style="background:#25d366;" onclick="waChat()">OPEN CHAT</button>
+    </div>
 </div>
 
 <script>
-    const CONFIG = {
-        GID: '5076529', // Unity Game ID
-        KEY: 'mtRYRnmx3dNQ1WhvnYuRgnQz' // API Key
+    const data = {
+        attitude: ["Sher apna rasta khud banate hain. 😎", "Hater mere fan ban gaye. 🔥", "Aura aisa ki duniya dekhti reh jaye."],
+        love: ["Tum meri wo khushi ho jo har kisi ko nahi milti. ❤️", "Mohabbat thi isliye jaane diya.", "Ishq mein sab kuch kurbaan hai."],
+        motivation: ["Rukna nahi hai, abhi toh poora aasmaan baaki hai. 🚀", "Hard work beats talent.", "Sapne bade dekho, mehnat usse bhi badi karo."]
     };
 
-    UnityAds.init(CONFIG.GID, true);
-
-    // Image Tool Logic
-    document.getElementById('fInp').onchange = (e) => {
-        const file = e.target.files[0];
-        if(file){
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                document.getElementById('imgPrev').src = ev.target.result;
-                document.getElementById('imgPrev').style.display = 'block';
-                document.getElementById('upText').style.display = 'none';
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    async function cleanPhoto() {
-        const f = document.getElementById('fInp').files[0];
-        if(!f) return alert("Photo chuno pehle!");
+    function generateStatus() {
+        const mood = document.getElementById('moodSelect').value;
+        const list = data[mood];
+        const random = list[Math.floor(Math.random() * list.length)];
+        document.getElementById('statusDisplay').innerText = random;
         
-        document.getElementById('progStatus').innerText = "AI Processing: 45%...";
-        document.getElementById('progStatus').style.display = "block";
-
-        const fd = new FormData();
-        fd.append('image_file', f);
-
-        try {
-            const res = await fetch('https://api.remove.bg/v1.0/removebg', {
-                method: 'POST',
-                headers: { 'X-Api-Key': CONFIG.KEY },
-                body: fd
-            });
-            if(res.ok) {
-                const b = await res.blob();
-                const u = URL.createObjectURL(b);
-                document.getElementById('imgPrev').src = u;
-                UnityAds.show('Interstitial_Android'); // Kamaai
-                alert("Processing Done! Long press photo to save.");
-            } else {
-                alert("API Limit reached! Use other tools below.");
-            }
-        } catch (e) { alert("Error! Check Internet."); }
+        // Show Ad on every generate
+        if(typeof UnityAds !== 'undefined') UnityAds.show('Interstitial_Android');
     }
 
-    // WhatsApp Logic
+    function copyStatus() {
+        const text = document.getElementById('statusDisplay').innerText;
+        navigator.clipboard.writeText(text);
+        alert("Success: Caption Copied! ✅");
+    }
+
     function waChat() {
         const num = document.getElementById('waNum').value;
         if(num) window.open(`https://wa.me/${num}`, '_blank');
-        UnityAds.show('Interstitial_Android');
-    }
-
-    // Caption Logic
-    function copyCap() {
-        const cap = document.getElementById('mood').value;
-        navigator.clipboard.writeText(cap);
-        alert("Caption Copied!");
-        UnityAds.show('Interstitial_Android');
     }
 </script>
-</body>
-</html>
