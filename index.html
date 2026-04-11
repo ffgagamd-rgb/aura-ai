@@ -1,50 +1,93 @@
-<div class="container">
-    <div class="tool-card">
-        <h2>🔥 Daily Status & Shayari</h2>
-        <div id="statusDisplay" style="background:#0d1117; padding:15px; border-radius:10px; min-height:60px; margin-bottom:15px; border:1px solid #30363d; font-style:italic; color:#bc8cff;">
-            "Click below to get trending AI Captions..."
-        </div>
-        <select id="moodSelect">
-            <option value="attitude">Attitude Status 😎</option>
-            <option value="love">Love Shayari ❤️</option>
-            <option value="motivation">Success Quotes 🚀</option>
-        </select>
-        <button class="btn-premium" onclick="generateStatus()">GENERATE NEW STATUS</button>
-        <button class="btn-premium" style="background:#30363d; margin-top:10px;" onclick="copyStatus()">COPY TO CLIPBOARD</button>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAI.in | Pro Digital Hub</title>
+    <script src="https://cdn.unityads.unity3d.com/sdk/4.0/unityads.js"></script>
+    <style>
+        :root { --accent: #58a6ff; --bg: #010409; --card: rgba(22, 27, 34, 0.8); }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
 
-    <div class="tool-card">
-        <h2>💬 Direct WhatsApp Chat</h2>
-        <input type="number" id="waNum" placeholder="Phone Number (e.g. 919876...)">
-        <button class="btn-premium" style="background:#25d366;" onclick="waChat()">OPEN CHAT</button>
-    </div>
+        .header { margin-bottom: 30px; text-align: center; }
+        .header h1 { font-size: 30px; background: linear-gradient(90deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Editor Section */
+        .editor-box { background: var(--card); border: 1px solid #30363d; padding: 25px; border-radius: 25px; width: 100%; max-width: 400px; backdrop-filter: blur(10px); }
+        h2 { font-size: 14px; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 12px; color: white; margin-bottom: 15px; outline: none; }
+        input:focus { border-color: var(--accent); }
+
+        /* Live Preview Card (Instagram Style) */
+        .preview-card { width: 100%; max-width: 320px; background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 30px; padding: 30px 20px; margin-top: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: none; }
+        .p-img { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; }
+        .p-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .p-bio { font-size: 12px; color: #8b949e; margin-bottom: 20px; }
+        .p-link { display: block; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; color: var(--accent); text-decoration: none; font-size: 14px; margin-bottom: 8px; border: 1px solid rgba(88, 166, 255, 0.2); }
+
+        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; background: var(--accent); color: white; margin-top: 10px; }
+        .btn-share { background: #238636; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>AuraAI.in</h1>
+    <p style="color: #8b949e; font-size: 12px;">Premium Digital Bio-Link Studio</p>
 </div>
 
+<div class="editor-box">
+    <h2>Edit Your Bio-Card</h2>
+    <input type="text" id="nameInp" placeholder="Your Name" oninput="updatePreview()">
+    <input type="text" id="bioInp" placeholder="Your Profession (e.g. Youtuber)" oninput="updatePreview()">
+    <input type="text" id="linkInp" placeholder="YouTube or Instagram Link" oninput="updatePreview()">
+    
+    <button class="btn-main" onclick="showPreview()">✨ GENERATE PREVIEW</button>
+</div>
+
+<div class="preview-card" id="card">
+    <div class="p-img">👤</div>
+    <div class="p-name" id="pName">Name Here</div>
+    <div class="p-bio" id="pBio">Profession Here</div>
+    <div id="linkBox"></div>
+    
+    <button class="btn-main btn-share" onclick="shareCard()">🚀 GET LINK & SHARE (AD)</button>
+</div>
+
+<p style="margin-top: 40px; font-size: 10px; color: #30363d;">SECURE STUDIO SYSTEM</p>
+
 <script>
-    const data = {
-        attitude: ["Sher apna rasta khud banate hain. 😎", "Hater mere fan ban gaye. 🔥", "Aura aisa ki duniya dekhti reh jaye."],
-        love: ["Tum meri wo khushi ho jo har kisi ko nahi milti. ❤️", "Mohabbat thi isliye jaane diya.", "Ishq mein sab kuch kurbaan hai."],
-        motivation: ["Rukna nahi hai, abhi toh poora aasmaan baaki hai. 🚀", "Hard work beats talent.", "Sapne bade dekho, mehnat usse bhi badi karo."]
-    };
+    // Unity Ads Init
+    const UNITY_ID = '5076529';
+    UnityAds.init(UNITY_ID, true);
 
-    function generateStatus() {
-        const mood = document.getElementById('moodSelect').value;
-        const list = data[mood];
-        const random = list[Math.floor(Math.random() * list.length)];
-        document.getElementById('statusDisplay').innerText = random;
+    function updatePreview() {
+        document.getElementById('pName').innerText = document.getElementById('nameInp').value || "Your Name";
+        document.getElementById('pBio').innerText = document.getElementById('bioInp').value || "Your Profession";
         
-        // Show Ad on every generate
-        if(typeof UnityAds !== 'undefined') UnityAds.show('Interstitial_Android');
+        const link = document.getElementById('linkInp').value;
+        const linkBox = document.getElementById('linkBox');
+        if(link) {
+            linkBox.innerHTML = `<div class="p-link">🔗 ${link}</div>`;
+        }
     }
 
-    function copyStatus() {
-        const text = document.getElementById('statusDisplay').innerText;
-        navigator.clipboard.writeText(text);
-        alert("Success: Caption Copied! ✅");
+    function showPreview() {
+        document.getElementById('card').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    function waChat() {
-        const num = document.getElementById('waNum').value;
-        if(num) window.open(`https://wa.me/${num}`, '_blank');
+    function shareCard() {
+        // Asli Kamaai Yahan Hogi
+        if(typeof UnityAds !== 'undefined') {
+            UnityAds.show('Interstitial_Android');
+            alert("Card Created! Link is being generated... (Check Ads Status)");
+        } else {
+            alert("Unity SDK loading...");
+        }
     }
 </script>
+</body>
+</html>
